@@ -1,105 +1,116 @@
-/******************************************************************************
-
-                              Online C++ Compiler.
-               Code, Compile, Run and Debug C++ program online.
-Write your code in this editor and press "Run" button to compile and execute it.
-
-*******************************************************************************/
-
 #include <iostream>
 
 using namespace std;
 
-class matrix {
-    int size_x;
-    int size_y;
-    std::string id;
-    double** data;
-public:
-    matrix(int size_x, int size_y, std::string id);
-    void print();
-    void set_data(int size_x, int size_y, double** data);
-};
+class vector;
+class matrix;
 
 class vector {
-    int size;
-    std::string id;
-    double* data;
+    friend class matrix;
+    friend vector operator + (vector a, vector b);
+    friend vector multiply(matrix &m, vector v); 
+    int v_size;
+    std::string v_id;
+    double* v_data;
 public:
-    vector(int size, std::string id);
+    vector(int v_size, std::string v_id);
     void print();
-    void set_data(int size, double* data);
-    void multiply(int size_x, int size_y, vector v, matrix m);
+    void set_data(int v_size, double* v_data);
 };
 
-vector :: vector (int size, std::string id = "unknown"){
-    this->size = size;
-    this->id = id;
+class matrix {
+    friend class vector;
+    friend vector multiply(matrix &m, vector v); 
+    int m_rows;
+    int m_cols;
+    std::string m_id;
+    double** m_data;
+public:
+    matrix(int m_rows, int m_cols, std::string m_id);
+    void print();
+    void set_data(int m_rows, int m_cols, double** m_data);
+};
 
-    data = new double [size];
-    for (int i=0;i<size;i++){
-        data[i]=0;
+vector :: vector (int v_size, std::string v_id = "unknown"){
+    this->v_size = v_size;
+    this->v_id = v_id;
+
+    v_data = new double [v_size];
+    for (int i = 0; i < v_size; i++){
+        v_data[i]=0;
     };
 };
 
 void vector :: print(){
-    cout << id << " " << size << std::endl;
-    for (int i=0;i<size;i++){
-        cout << data[i] << std::endl;
+    cout << v_id << " size: " << v_size << std::endl;
+    for (int i = 0; i < v_size; i++){
+        cout << v_data[i] << std::endl;
     };
 };
 
-void vector :: set_data (int size, double* data){
-    for (int i=0;i<size;i++){
-        this->data[i]=data[i];
+void vector :: set_data (int v_size, double* v_data){
+    for (int i = 0; i < v_size; i++){
+        this->v_data[i]=v_data[i];
     };
 };
 
-void vector :: multiply(int size_x, int size_y, vector v, matrix m){
-    data = new double [size_y];
-    for (int i=0; i<size_x; i++){
-
-        data[i] = new double[size_y+1];
-        for (int j=0; j<size_y; j++){
-            data[i][j]=0;
-        };
-};
 
 
+matrix :: matrix (int m_rows, int m_cols, std::string m_id = "unknown"){
 
-matrix :: matrix (int size_x, int size_y, std::string id = "unknown"){
+    this->m_rows = m_rows;
+    this->m_cols = m_cols;
+    this->m_id = m_id;
 
-    this->size_x = size_x;
-    this->size_y= size_y;
-    this->id = id;
-
-    data = new double* [size_x+1];
-    for (int i=0; i<size_x; i++){
-        data[i] = new double[size_y+1];
-        for (int j=0; j<size_y; j++){
-            data[i][j]=0;
+    m_data = new double* [m_rows];
+    for (int i = 0; i < m_rows; i++){
+        m_data[i] = new double[m_cols];
+        for (int j = 0; j < m_cols; j++){
+            m_data[i][j] = 0;
         };
 
     };
 };
 
 void matrix :: print (){
-    for (int i = 0; i < size_x; i++) {
-        for (int j = 0; j < size_y; j++) {
-            cout << data[i][j] << " ";
+    cout << m_id << " size: " << m_rows << " x " << m_cols << std::endl;
+    for (int i = 0; i < m_rows; i++) {
+        for (int j = 0; j < m_cols; j++) {
+            cout << m_data[i][j] << " ";
         };
         cout << endl;
     };
+    
 };
 
-void matrix :: set_data(int size_x, int size_y, double** data){
+void matrix :: set_data(int m_rows, int m_cols, double** m_data){
 
-    for (int i=0; i<size_x; i++){
-        for (int j=0; j<size_y; j++){
-            this->data[i][j]=data[i][j];
+    for (int i = 0; i < m_rows; i++){
+        for (int j = 0; j < m_cols; j++){
+            this->m_data[i][j] = m_data[i][j];
         };
 
     };
+};
+
+vector operator + (vector a, vector b){
+    vector temp(a.v_size, "sum");
+    for (int i=0; i < a.v_size; i++){
+        temp.v_data[i] = a.v_data[i]+b.v_data[i];
+    };
+    return temp;
+};
+
+
+vector multiply(matrix &m, vector v) {
+    vector temp(m.m_rows, "mult");
+    for (int i=0; i < m.m_rows; i++){
+        temp.v_data[i] = 0;
+        for (int j = 0; j < m.m_cols; j++){
+            temp.v_data[i] = temp.v_data[i] + m.m_data[i][j]*v.v_data[j];
+            };
+        };
+    return temp;
 };
 
 int main(){
@@ -117,12 +128,18 @@ int main(){
         for (int j=0; j<5; j++){
             data2d[i][j]=i;
         };
-
     };
-
     m1.set_data(3, 5, data2d);
-
     m1.print();
+    
+    cout << "lets sum v1 + v1. ";
+    vector v2 = v1 + v1;
+    v2.print();
+    
+    cout << "lets multiply m1 * v1. ";
+    vector v3 = multiply(m1, v1);
+    v3.print();
+    
     cout << "Bye world!" << endl;
     return 0;
 };
