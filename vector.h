@@ -1,6 +1,8 @@
 
 #include <iostream>
 using namespace std;
+#ifndef VECTOR_H
+#define VECTOR_H
 
 class matrix;
 
@@ -16,3 +18,5 @@ public:
     void print();
     void set_data(int v_size, double* v_data);
 };
+
+#endif
