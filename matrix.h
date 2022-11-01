@@ -1,6 +1,8 @@
-
 #include <iostream>
 using namespace std;
+#ifndef MATRIX_H
+#define MATRIX_H
+
 
 class vector;
 
@@ -16,3 +18,5 @@ public:
     void print();
     void set_data(int m_rows, int m_cols, double** m_data);
 };
+
+#endif
