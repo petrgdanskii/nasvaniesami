@@ -9,6 +9,7 @@ class vector;
 class matrix {
     friend class vector;
     friend vector multiply(matrix &m, vector v);
+    friend vector solver(matrix M, vector v, double eps);
     int m_rows;
     int m_cols;
     std::string m_id;
@@ -17,6 +18,7 @@ public:
     matrix(int m_rows, int m_cols, std::string m_id);
     void print();
     void set_data(int m_rows, int m_cols, double** m_data);
+    double norm_frob();
 };
 
 #endif
